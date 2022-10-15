@@ -1,5 +1,10 @@
+import sys
+from datetime import datetime
 from random import randint
 from time import sleep
+
+def ts():
+    return datetime.now().timestamp()
 
 
 class Logger:
@@ -22,20 +27,37 @@ class BufferedLogger(Logger):
 
     def log(self, msg: str):
         self.buffer.append(msg)
-        #todo: co jeśli w "buffer" już jest linii tyle ile on może pomieścić, czyli self.buffer_size?
-        # wtedy trzeba automatycznie wykonać self.flush()
-        # a potem wyczyścić buffer
+        if len(self.buffer) >= self.buffer_size:
+            self.flush()
 
     def flush(self):
+        """
+        Drukuje zawartość bufora na konsolę, po czym czyści bufor
+        :return:
+        """
         for l in self.buffer:
             print(l)
+        self.buffer.clear()
+
+
+class FileBasedBufferedLogger(BufferedLogger):
+
+    def __init__(self, log_file_name: str, buffer_size):
+        super().__init__(buffer_size)
+        self.log_file_name = log_file_name
+
+    def flush(self):
+        with open(self.log_file_name, 'w') as f:
+            for line in self.buffer:
+                f.write(line + '\n')
 
 
 if __name__ == '__main__':
-    ll = BufferedLogger(log_id=17, buffer_size=100)
-    ll.log('Komunikat')
-    l7 = Logger(7)
-    l7.log('Komunikat')
-    l7.log('Zaczynam dlugie obliczenia')
-    sleep(1)
-    l7.log('Koniec obliczen')
+    st = ts()
+    # ll = Logger(log_id=1)
+    # ll = BufferedLogger(buffer_size=10)
+    ll = FileBasedBufferedLogger(log_file_name='app.log', buffer_size=1000)
+    for i in range(1000):
+        ll.log(f'Komunitat {i}')
+    en = ts()
+    print(f'czas trwania: {en-st:.3f}')
