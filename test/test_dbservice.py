@@ -1,7 +1,7 @@
 import unittest
 
 from src.z1.klasy import Logger, BufferedLogger
-from src.z2.dbservice import DbService
+from src.z2_dbservice.dbservice import DbService
 
 
 class ApiTests(unittest.TestCase):
