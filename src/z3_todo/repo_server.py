@@ -1,15 +1,14 @@
 from uuid import uuid4
 
 
-class Candidate:
+class RepoServer:
 
     def __init__(self):
         self.id = uuid4()
-        self.others: list[Candidate] = []
-        self.is_leader = None
-        self.leader = None
+        self.cluster: set[RepoServer] = {self}  # wszystkie RepoServer'y
+        self.is_leader = True
+        self.leader: 'RepoServer' = self
         self.data = []
-
 
     def write(self, message: str):
         """
@@ -22,7 +21,7 @@ class Candidate:
         Funkcja do wywołania tylko przez leadera
         """
         self.data.append(message)
-        for oth in self.others:
+        for oth in self.cluster:
             oth.follower_write(message)
 
     def follower_write(self, message: str):
@@ -31,43 +30,56 @@ class Candidate:
         """
         self.data.append(message)
 
+    def add_other(self, candidate: 'RepoServer'):
+        self.cluster.add(candidate)
 
-    def add_other(self, candidate: 'Candidate'):
-        self.others.append(candidate)
+    def extend_cluster(self, candidate: 'RepoServer'):
+        """
+        Add an extra node 'candidate' to the cluster represented by self.cluster
+        :param candidate: just a new 'RepoServer'
+        :return:
+        """
+
+        # cluster membership
+        for node in self.cluster.copy():
+            node.add_other(candidate)
+        candidate.cluster = self.cluster.copy()
+
+        # clone leader info from self
+        candidate.leader = self.leader
+        candidate.is_leader = False
+
+        # clone data from self
+        candidate.data = self.data.copy()
 
     def elect_leader(self):
         print(f'electing leader on {self.id}')
+        all_ids = [n.id for n in self.cluster]
+        leader_id = min(all_ids)
+        leader_ref = None
 
-        # przerobić tą funkcję tak by self.is_leader było True, jeśli nasz id jest najmniejszy z wszystkich
-        min_id = self.id
-        for oth in self.others:
-            min_id = min(min_id, oth.id)
+        for node in self.cluster:
+            if node.id == leader_id:
+                node.is_leader = True
+                node.leader = node
+                leader_ref = node
 
-        if self.id == min_id:
-            self.is_leader = True
-            self.leader = self
-        else:
-            self.is_leader = False
+        for node in self.cluster:
+            node.is_leader = (node.id == leader_id)
+            node.leader = leader_ref
 
-        # czy to wystarczy ↓↓ by wybory odbyły się na wszystkich Candidate'ach?
-        for oth in self.others:
-            if oth.is_leader is None:
-                oth.elect_leader()
-            if oth.is_leader is True:
-                self.leader = oth
+
 
     def __repr__(self):
         return f'Candidate(id={self.id}, is_leader={self.is_leader})'
 
 
 if __name__ == '__main__':
-    N = 9
-    candidates = [Candidate() for _ in range(N)]
+    N = 3
+    candidates = [RepoServer() for _ in range(N)]
     for c in candidates:
         for ca in candidates:
-            if c != ca:
-                c.add_other(ca)
-
+            c.add_other(ca)
 
     candidates[0].elect_leader()
     print(candidates)
@@ -76,12 +88,11 @@ if __name__ == '__main__':
     # klient wykonuje zapisy
     candidates[1].write('aaa')
     candidates[0].write('bbb')
-    candidates[4].write('ccc')
+    candidates[2].write('ccc')
     candidates[2].write('ddd')
 
     for c in candidates[:3]:
         print(c.data)
-
 
 # dla dwóch:
 
