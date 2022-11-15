@@ -82,11 +82,12 @@ class TodoServerTest(unittest.TestCase):
         # arrange
         cluster = create_cluster_easy(3)
 
-        #act
+        # act
         cluster[1].write('kadabra')
 
-        #assert
-        for node in cluster:
-            assert len(node.data) == 1
-            assert node.data[0] == 'kadabra'
+        assert cluster[1].data[0] == 'kadabra'
 
+        # assert
+        for node in cluster:
+            self.assertEqual(len(node.data), 1)
+            assert node.data[0] == 'kadabra'
