@@ -16,8 +16,10 @@ class ParkingTest(unittest.TestCase):
     def test_parking_vehicle_entered_is_at_parking(self):
         v = Vehicle()
         p = Parking()
+        before_capacity = p.get_free_capacity()
 
         p.enter(v)
+        now_capacity = p.get_free_capacity()
 
         self.assertEqual(v.place, p)
-        self.assertTrue(True)
+        self.assertEqual(now_capacity, before_capacity - 1)
