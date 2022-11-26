@@ -1,7 +1,57 @@
+from collections.abc import Collection
+from dataclasses import dataclass
+from datetime import date, datetime
 from uuid import uuid4
 
 
-class RepoServer:
+@dataclass
+class TodoMessage:
+    content: str
+    due_date: date
+    message_id: str
+
+
+class TodoRepo:
+
+    def write(self, message: TodoMessage):
+        """
+        Stores the `message` in the system.
+        :param message:
+        :return:
+        """
+        pass
+
+    def read_all(self) -> Collection[TodoMessage]:
+        """
+        :return: all messages stored in the system
+        """
+        pass
+
+    def read_range(self, from_due_date: date, to_due_date=datetime.now().date()) -> Collection[TodoMessage]:
+        """
+        :param from_due_date:
+        :param to_due_date:
+        :return: all messages stored with due date between the dates provided
+        """
+        pass
+
+    def remove(self, message_id: str):
+        """
+        Removes the massage with provided ID; does nothing if such message is not present in the system.
+        :param message_id:
+        :return:
+        """
+
+
+t = TodoRepo()
+t.write(TodoMessage('abrakadabra'))
+z = t.read_all()
+
+if TodoMessage('aaa') in z:
+    pass
+
+
+class RepoServer(TodoRepo):
 
     def __init__(self):
         self.id = uuid4()
@@ -68,8 +118,6 @@ class RepoServer:
             node.is_leader = (node.id == leader_id)
             node.leader = leader_ref
 
-
-
     def __repr__(self):
         return f'Candidate(id={self.id}, is_leader={self.is_leader})'
 
@@ -109,12 +157,3 @@ if __name__ == '__main__':
 #
 # print(cand1)
 # print(cand2)
-
-
-"""
-1) Kandydaci powinni wiedzieć o sobie, 
-2) Powinni mieć pole is_leader: bool
-3) Powinni mieć metodę elect_leader(), która ustawi self.is_leader=True, jeśli aktualny Candidate ma najmniejszy .id, 
-   lub self.is_leader=False w przeciwnym przypadku
-4) Chcemy mieć możliwość uruchomienia tych wyborów z pojedynczego Candidate (nie tak byśmy musieli mieć referencje do wszystkich)
-"""

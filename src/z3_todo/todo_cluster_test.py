@@ -85,7 +85,7 @@ class TodoServerTest(unittest.TestCase):
         # act
         cluster[1].write('kadabra')
 
-        assert cluster[1].data[0] == 'kadabra'
+        assert cluster[1].data[0] == 'kadabra'  # fixme: this shall not pass --> add .read() method
 
         # assert
         for node in cluster:
