@@ -19,7 +19,11 @@ class Parking(IPlace):
     def __init__(self):
         self.vehicles: set[Vehicle] = set()
 
-    # todo: zaimplementować metody interfejsu IPlace
+    def enter(self, vehicle: Vehicle):
+        self.vehicles.add(vehicle)
+
+    def leave(self, vehicle: Vehicle):
+        self.vehicles.remove(vehicle)
 
 
 class TollParking(Parking):
