@@ -12,12 +12,3 @@ class IFixedCapacity(ABC):
         raise NotImplementedError()
 
 
-class ParkingError(RuntimeError):
-    """
-    General errors in the parking system
-    """
-    pass
-
-
-class OutOfCapacityParkingError(ParkingError):
-    pass
