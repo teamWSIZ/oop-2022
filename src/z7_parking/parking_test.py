@@ -1,10 +1,15 @@
 import unittest
+from datetime import datetime
+from time import sleep
 
 from src.z7_parking.errorz import *
 from src.z7_parking.financial import MonetaryParkingError
 from src.z7_parking.places import Parking, TollParking
 from src.z7_parking.vehicles import Vehicle, PremiumCar
 
+
+def ts():
+    return datetime.now().timestamp()
 
 class ParkingTest(unittest.TestCase):
 
@@ -70,7 +75,13 @@ class ParkingTest(unittest.TestCase):
         p.enter(v1)
 
     def test_vehicle_is_correctly_billed(self):
-        raise NotImplementedError()
+        v = PremiumCar(money=1.5)
+        p = TollParking(fee_per_second=1.0)
+        st = ts()
+        p.enter(v)
+        sleep(0.5)
+        p.leave(v)
+        self.assertAlmostEqual(v.money, 1.0, places=2)
 
     def test_parking_collects_monies(self):
         raise NotImplementedError()
