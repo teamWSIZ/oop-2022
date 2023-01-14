@@ -38,7 +38,9 @@ class IElement:
         :raises IncompatibleThreadsError if threads are not compatible and cannot be connected
         :return:
         """
-        if type(thread1.size) != type(thread2.size):  # todo: WTF?? repair using isinstance ??
+        # on PEP 8: E721 complaint:
+        # https://stackoverflow.com/questions/52395064/e721-do-not-compare-types-use-isinstance-error
+        if type(thread1.size) != type(thread2.size):
             raise IncompatibleThreadsError('Sizes of both threads are not same')
 
         # only positive connections listed; else: error
