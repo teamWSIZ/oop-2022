@@ -29,11 +29,19 @@ class IElement:
         """
         self.__validate_thread_compatibility(self.__threads[thread_number], other.__threads[other_thread_number])
 
-        self.__connected_elements[thread_number] = other
+        if (self.__connected_elements[thread_number] is None) and (
+                other.__connected_elements[other_thread_number] is None):
+            self.__connected_elements[thread_number] = other
+            other.__connected_elements[other_thread_number] = self
+        else:
+            raise HydraulicError
 
     def get_number_of_threads(self):
         # getter
         return self.__number_of_threads
+
+    def get_connected_element_at(self, position: int):
+        return self.__connected_elements[position]
 
     def __validate_thread_compatibility(self, thread1: 'Thread', thread2: 'Thread'):
         """
@@ -152,7 +160,9 @@ class HydraulicTests(unittest.TestCase):
     def test_can_link_adapter_to_14Outer_on_2nd_link(self):
         adapter = Adapter_38Outer_14Innner()
         element = WaterTap(Thread(size=Thread_1_4(), type=OuterThread()))
-        adapter.connect_thread(element, 1, 0)
+        adapter.connect_thread(element, thread_number=1, other_thread_number=0)
+        assert adapter.get_connected_element_at(1) == element
+        assert element.get_connected_element_at(0) == adapter
 
     def test_can_link_adapter_to_38Inner_on_1st_link(self):
         adapter = Adapter_38Outer_14Innner()
@@ -164,8 +174,6 @@ class HydraulicTests(unittest.TestCase):
         element = WaterTap(Thread(size=Thread_3_8(), type=OuterThread()))
         with self.assertRaises(IncompatibleThreadsError):
             adapter.connect_thread(element, thread_number=0, other_thread_number=0)
-
-
 
     # def test_can_create_source(self):
     #     source = WaterSource(Thread(Thread_1_2(), OuterThread()))
