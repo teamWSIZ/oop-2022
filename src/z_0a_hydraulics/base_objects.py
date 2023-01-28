@@ -33,6 +33,8 @@ class IElement:
         return self.__number_of_threads
 
     def get_connected_element_at(self, position: int):
+        if self.get_number_of_threads() >= position:
+            raise HydraulicError('Asking for element at position beyond the range of the number of threads')
         return self.__connected_elements[position]
 
     def __validate_thread_compatibility(self, thread1: 'Thread', thread2: 'Thread'):
