@@ -5,16 +5,6 @@ class HydraulicError(RuntimeError):
 class IncompatibleThreadsError(HydraulicError):
     pass
 
-#
-# class A:
-#     def __init__(self, x=12):
-#         self.x = x
-#
-#
-# a = A
-# inst_a = a()
-# print(type(inst_a))
-# print(inst_a.x)
 
 if __name__ == '__main__':
     try:

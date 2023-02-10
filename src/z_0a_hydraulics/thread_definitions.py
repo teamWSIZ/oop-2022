@@ -1,18 +1,22 @@
-class IThreadSize:
-    verbal: str
-
-    def to_json(self):
-        return 'thread size'
+from abc import ABC, abstractmethod
 
 
-class IThreadType:
-    verbal: str
+class IThreadSize(ABC):
 
-    def to_json(self):
-        return 'thread type'
+    @abstractmethod
+    def __init__(self):
+        self.verbal: str = ''
+        pass
 
 
-# todo: disallow creating instances of Thread; must subclass it
+class IThreadType(ABC):
+
+    @abstractmethod
+    def __init__(self):
+        self.verbal: str = ''
+        pass
+
+
 class Thread:
 
     def __init__(self, size: IThreadSize, type: IThreadType):
@@ -20,7 +24,7 @@ class Thread:
         self.type = type  # inner/outer
 
 
-#(todo)  specific definitions of sizes
+# (todo)  specific definitions of sizes
 
 class Thread_3_8(IThreadSize):
     def __init__(self):
@@ -37,7 +41,7 @@ class Thread_1_4(IThreadSize):
         self.verbal = '1/4'
 
 
-#(todo)  specific definitions of sizes
+# (todo)  specific definitions of sizes
 
 class InnerThread(IThreadType):
     def __init__(self):
