@@ -7,7 +7,7 @@ class A:
     def get_y(self):  # pubczlina metoda
         return self.__y  # sposob na ekspozycje zmiennej prywatnej
 
-    def __double_x(self):  # prywatna metoda (nie mozna jej wykonac majac referencje do instancji klasy A)
+    def __double_x(self):  # prywatna metoda (nie można jej wykonać z referencji do instancji klasy A)
         self.x *= 2
 
 

@@ -63,39 +63,6 @@ class IElement:
         other.__connected_elements[other_position] = None
         self.__connected_elements[position] = None
 
-
-
-    def disconnect__(self, position: int):
-        """
-        Alternatywna implementacja .disconnect()
-        :param position:
-        :return:
-        """
-        if position >= self.get_number_of_threads():
-            raise HydraulicError('Disconnecting from thread that does not exist')
-        other = self.get_connected_element_at(position)
-
-        if other is None:
-            raise HydraulicError(f'Cannot disconnect element at {position=}; no element connected')
-
-        try:
-            self.__connected_elements[position] = None
-            # now -- must find the position where self is attached at the `other` IElement
-            # unfortunately we don't have specialized methods for this
-
-            position_at_other = None
-            for idx in range(other.get_number_of_threads()):
-                if other.get_connected_element_at(idx) == self:
-                    position_at_other = idx
-                    break
-            if position_at_other is None:
-                raise HydraulicError('Current element is not connected at the other end; consistency error!')
-
-            other.__connected_elements[position_at_other] = None  # somewhat crude solution... can't call .disconnect()
-
-        except HydraulicError as e:
-            print('error occurred while disconnecting elements')
-
     def __validate_thread_compatibility(self, thread1: 'Thread', thread2: 'Thread'):
 
         """
